@@ -1,0 +1,29 @@
+import os
+import subprocess
+import whisper
+
+# Step 1: List of uploaded audio files
+audio_files = [
+    "/mnt/data/New Recording 1.m4a",
+    "/mnt/data/New Recording 2.m4a",
+    "/mnt/data/New Recording 3.m4a"
+]
+
+# Step 2: Convert to WAV using ffmpeg and prepare for transcription
+converted_files = []
+for file_path in audio_files:
+    wav_path = file_path.replace(".m4a", ".wav")
+    subprocess.run(["ffmpeg", "-i", file_path, wav_path])
+    converted_files.append(wav_path)
+
+# Step 3: Load Whisper model
+model = whisper.load_model("base")
+
+# Step 4: Transcribe each file
+transcripts = {}
+for wav_path in converted_files:
+    result = model.transcribe(wav_path)
+    transcripts[os.path.basename(wav_path)] = result["text"]
+
+# Output transcripts
+transcripts
